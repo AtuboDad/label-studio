@@ -1,0 +1,230 @@
+import { Callout, CalloutContent, CalloutHeader, CalloutIcon, CalloutTitle } from "@humansignal/ui/lib/callout/callout";
+import { IconWarning } from "@humansignal/icons";
+import { atomWithMutation, atomWithQuery, queryClientAtom } from "jotai-tanstack-query";
+import { useAtomValue } from "jotai";
+import clsx from "clsx";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { format } from "date-fns";
+import { useCopyText } from "../../../lib/hooks/useCopyText";
+import styles from "./PersonalJWTToken.module.scss";
+
+/**
+ * FIXME: This is legacy imports. We're not supposed to use such statements
+ * each one of these eventually has to be migrated to core/ui
+ */
+import { API } from "apps/labelstudio/src/providers/ApiProvider";
+import { modal, confirm } from "apps/labelstudio/src/components/Modal/Modal";
+import { Button } from "apps/labelstudio/src/components/Button/Button";
+import { Input, Label } from "apps/labelstudio/src/components/Form/Elements";
+import { Tooltip } from "@humansignal/ui";
+
+type Token = {
+  token: string;
+  expires_at: string;
+};
+
+const ACCESS_TOKENS_QUERY_KEY = ["access-tokens"];
+
+// list all existing API tokens
+const tokensListAtom = atomWithQuery(() => ({
+  queryKey: ACCESS_TOKENS_QUERY_KEY,
+  async queryFn() {
+    const tokens = await API.invoke("accessTokenList");
+    if (!tokens.$meta.ok) {
+      console.error(token.error);
+      return [];
+    }
+
+    return tokens as Token[];
+  },
+}));
+
+// despite the name, gets user's access token
+const refreshTokenAtom = atomWithMutation((get) => {
+  const queryClient = get(queryClientAtom);
+  return {
+    mutationKey: ["refresh-token"],
+    async mutationFn() {
+      const token = await API.invoke("accessTokenGetRefreshToken");
+      if (!token.$meta.ok) {
+        console.error(token.error);
+        return "";
+      }
+      return token.token;
+    },
+    onSettled() {
+      queryClient.invalidateQueries({ queryKey: ACCESS_TOKENS_QUERY_KEY });
+    },
+  };
+});
+
+const revokeTokenAtom = atomWithMutation((get) => {
+  const queryClient = get(queryClientAtom);
+  return {
+    mutationKey: ["revoke"],
+    async mutationFn({ token }: { token: string }) {
+      await API.invoke("accessTokenRevoke", null, {
+        params: {},
+        body: {
+          refresh: token,
+        },
+      });
+    },
+    // Optimistic update
+    async onMutate({ token }: { token: string }) {
+      // Cancel all ongoing queries so we can override the data they hold
+      await queryClient.cancelQueries({ queryKey: ACCESS_TOKENS_QUERY_KEY });
+      // Getting currently cached data of a specific query
+      const previousTokens = queryClient.getQueryData(ACCESS_TOKENS_QUERY_KEY) as Token[];
+      // We need to keep everything but one token that we just deleted
+      const filtered = previousTokens.filter((t) => t.token !== token);
+      // We now optimistically override data inside the query
+      queryClient.setQueryData(ACCESS_TOKENS_QUERY_KEY, (old: Token[]) => filtered as Token[]);
+      return { previousTokens };
+    },
+    onError: (err, newTodo, context) => {
+      // If error, reset query to its previous state (without changes from `onMutate`)
+      queryClient.setQueryData(ACCESS_TOKENS_QUERY_KEY, context?.previousTokens);
+    },
+    onSettled() {
+      // Reload query from remote if deletion went ok
+      queryClient.invalidateQueries({
+        queryKey: ACCESS_TOKENS_QUERY_KEY,
+      });
+    },
+  };
+});
+
+export function PersonalJWTToken() {
+  const [dialogOpened, setDialogOpened] = useState(false);
+  const tokens = useAtomValue(tokensListAtom);
+  const revokeToken = useAtomValue(revokeTokenAtom);
+  const createToken = useAtomValue(refreshTokenAtom);
+
+  const tokensListClassName = clsx({
+    [styles.tokensList]: tokens.data && tokens.data.length,
+  });
+
+  const revoke = useCallback(
+    async (token: string) => {
+      confirm({
+        title: "撤销令牌",
+        body: `您确定要删除此访问令牌吗？任何使用此令牌的应用程序都需要一个新的令牌才能访问 ${
+          window?.APP_SETTINGS?.app_name || "Label Studio"
+        }`,
+        okText: "撤销",
+        buttonLook: "danger",
+        onOk: async () => {
+          await revokeToken.mutateAsync({ token });
+        },
+      });
+    },
+    [revokeToken],
+  );
+
+  const disallowAddingTokens = useMemo(() => {
+    return createToken.isPending || tokens.isLoading || (tokens.data?.length ?? 0) > 0;
+  }, [createToken.isPending, tokens.isLoading, tokens.data]);
+
+  function openDialog() {
+    if (dialogOpened) return;
+    setDialogOpened(true);
+    modal({
+      visible: true,
+      title: "新身份令牌",
+      style: { width: 680 },
+      body: CreateTokenForm,
+      closeOnClickOutside: false,
+      onHidden: () => setDialogOpened(false),
+    });
+  }
+
+  return (
+    <div className={styles.personalAccessToken}>
+      <div className={tokensListClassName}>
+        {tokens.isLoading ? (
+          <div>加载中...</div>
+        ) : tokens.isSuccess && tokens.data && tokens.data.length ? (
+          <div>
+            <Label text="身份令牌" className={styles.label} />
+            <div className="flex flex-col gap-2">
+              {tokens.data.map((token, index) => {
+                return (
+                  <div key={`${token.expires_at}${index}`} className={styles.token}>
+                    <div className={styles.tokenWrapper}>
+                      <div className={styles.expirationDate}>
+                        {token.expires_at
+                          ? `过期时间 ${format(new Date(token.expires_at), "yyyy-MM-dd HH:mm:ss")}`
+                          : "个人身份令牌"}
+                      </div>
+                      <div className={styles.tokenString}>{token.token}</div>
+                    </div>
+                    <Button look="destructive" onClick={() => revoke(token.token)}>
+                      撤销
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : tokens.isError ? (
+          <div>无法加载令牌列表</div>
+        ) : null}
+      </div>
+      <Tooltip title="只能有一个活动令牌" disabled={!disallowAddingTokens}>
+        <div style={{ width: "max-content" }}>
+          <Button disabled={disallowAddingTokens || dialogOpened} onClick={openDialog}>
+            创建令牌
+          </Button>
+        </div>
+      </Tooltip>
+    </div>
+  );
+}
+
+function CreateTokenForm() {
+  const { data, mutate: createToken } = useAtomValue(refreshTokenAtom);
+  const [copy, copied] = useCopyText(data ?? "");
+
+  useEffect(() => {
+    createToken();
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p>从下面复制新的访问令牌并确保其安全。 </p>
+
+      <div className="flex items-end w-full gap-2">
+        <Input
+          label="访问令牌"
+          labelProps={{ className: "flex-1", rawClassName: "flex-1" }}
+          className="w-full"
+          readOnly
+          value={data}
+        />
+        <Button onClick={copy} disabled={copied}>
+          {copied ? "已复制!" : "复制"}
+        </Button>
+      </div>
+
+      {data?.expires_at && (
+        <div>
+          <Label text="令牌过期时间" />
+          {data && format(new Date(data?.expires_at), "yyyy-MM-dd HH:mm:ss")}
+        </div>
+      )}
+
+      <Callout variant="warning">
+        <CalloutHeader>
+          <CalloutIcon>
+            <IconWarning />
+          </CalloutIcon>
+          <CalloutTitle>请妥善保管好您的访问令牌</CalloutTitle>
+        </CalloutHeader>
+        <CalloutContent>
+        不要与任何人共享此密钥，如果你怀疑任何密钥已被泄露，你应该撤销，并且创建新的。
+        </CalloutContent>
+      </Callout>
+    </div>
+  );
+}

@@ -1,0 +1,316 @@
+---
+test_name: simple_export
+strict: false
+marks:
+- usefixtures:
+  - django_live_url
+stages:
+- id: signup
+  type: ref
+- name: stage
+  request:
+    headers:
+      content-type: application/json
+    json:
+      label_config: <View><Text name="text" value="$text"/><Choices name="label" toName="text"><Choice
+        value="pos"/><Choice value="neg"/></Choices></View>
+    method: POST
+    url: '{django_live_url}/api/projects'
+  response:
+    save:
+      json:
+        pk: id
+    status_code: 201
+- name: stage
+  request:
+    files:
+      file: tests/test_suites/samples/lines.txt
+    headers:
+      content-type: multipart/form-data
+    method: POST
+    url: '{django_live_url}/api/projects/{pk}/import'
+  response:
+    json:
+      annotation_count: 0
+      prediction_count: 0
+      task_count: 3
+    status_code: 201
+- name: stage
+  request:
+    method: GET
+    url: '{django_live_url}/api/projects/{pk}/next'
+  response:
+    save:
+      json:
+        task_pk: id
+    status_code: 200
+- name: stage
+  request:
+    headers:
+      content-type: application/json
+    json:
+      lead_time: 34.56
+      result:
+      - from_name: label
+        to_name: text
+        type: choices
+        value:
+          choices:
+          - pos
+    method: POST
+    url: '{django_live_url}/api/tasks/{task_pk}/annotations'
+  response:
+    save:
+      json:
+        annotation_pk: id
+    status_code: 201
+- name: stage
+  request:
+    method: GET
+    url: '{django_live_url}/api/projects/{pk}/export'
+  response:
+    status_code: 200
+- name: stage
+  request:
+    method: GET
+    url: '{django_live_url}/api/projects/{pk}/export?ids[]={task_pk}'
+  response:
+    status_code: 200
+- name: stage
+  request:
+    method: GET
+    url: '{django_live_url}/api/projects/{pk}/export?ids[]=9999999'
+  response:
+    status_code: 200
+
+
+---
+test_name: YOLO_export_option_polygons
+strict: true
+marks:
+- usefixtures:
+  - django_live_url
+stages:
+- id: signup
+  type: ref
+- name: stage
+  request:
+    headers:
+      content-type: application/json
+    json:
+      label_config: <View><Header value="Select label and click the image to start"/><Image name="image" value="$image" /><PolygonLabels name="label" toName="image" strokeWidth="3" pointSize="small"><Label value="Airplane" background="red"/><Label value="Car" background="blue"/></PolygonLabels></View>
+    method: POST
+    url: '{django_live_url}/api/projects'
+  response:
+    save:
+      json:
+        pk: id
+    status_code: 201
+- name: stage_export
+  request:
+    method: GET
+    url: '{django_live_url}/api/projects/{pk}/export/formats'
+  response:
+    json:
+      - title: JSON
+        description: 以原始 JSON 格式存储在一个 JSON 文件中的项目列表。用于导出数据集的数据和标注。这是 Label Studio 通用格式。
+        link: https://labelstud.io/guide/export.html#JSON
+        name: JSON
+      - title: JSON-MIN
+        description: 仅导出原始 JSON 格式中 "from_name"、"to_name" 值的项目列表。用于仅导出数据集的标注。
+        link: https://labelstud.io/guide/export.html#JSON-MIN
+        name: JSON_MIN
+      - title: CSV
+        description: 结果以逗号分隔值的形式存储，列名由 "from_name" 和 "to_name" 字段的值指定。
+        link: https://labelstud.io/guide/export.html#CSV
+        name: CSV
+      - title: TSV
+        description: 结果存储在以制表符分隔的表格文件中，列名由 "from_name" 和 "to_name" 的值指定。
+        link: https://labelstud.io/guide/export.html#TSV
+        name: TSV
+      - title: COCO
+        description: 流行的机器学习格式，用于 COCO 数据集的对象检测和带多边形及矩形的图像分割任务。
+        link: https://labelstud.io/guide/export.html#COCO
+        tags:
+        - image segmentation
+        - object detection
+        name: COCO
+      - title: COCO with Images
+        description: 下载了图像的 COCO 格式。
+        link: https://labelstud.io/guide/export.html#COCO
+        tags:
+        - image segmentation
+        - object detection
+        name: COCO_WITH_IMAGES
+      - title: YOLO
+        description: 为每个图像文件创建流行的 TXT 格式文件。每个 TXT 文件包含对应图像文件的标注信息，即对象类别、对象坐标、高度和宽度。
+        link: https://labelstud.io/guide/export.html#YOLO
+        tags:
+        - image segmentation
+        - object detection
+        name: YOLO
+      - title: YOLO with Images
+        description: 下载了图像的 YOLO 格式。
+        link: https://labelstud.io/guide/export.html#YOLO
+        tags:
+        - image segmentation
+        - object detection
+        name: YOLO_WITH_IMAGES
+      - title: YOLOv8 OBB
+        description: 为每个图像文件创建流行的 TXT 格式文件。每个 TXT 文件包含对应图像文件的标注信息。YOLO OBB 格式通过四个角点（坐标归一化到 0 到 1 之间）来指定边界框，因此可以导出旋转的对象。
+        link: https://labelstud.io/guide/export.html#YOLO
+        tags:
+        - image segmentation
+        - object detection
+        name: YOLO_OBB
+      - title: YOLOv8 OBB with Images
+        description: 下载了图像的 YOLOv8 OBB 格式。
+        link: https://labelstud.io/guide/export.html#YOLO
+        tags:
+        - image segmentation
+        - object detection
+        name: YOLO_OBB_WITH_IMAGES
+      - title: CONLL2003
+        description: 用于 CoNLL-2003 命名实体识别挑战赛的流行格式。
+        link: https://labelstud.io/guide/export.html#CONLL2003
+        tags:
+        - sequence labeling
+        - text tagging
+        - named entity recognition
+        name: CONLL2003
+        disabled: true
+      - title: Pascal VOC XML
+        description: 用于对象检测和多边形图像分割任务的流行 XML 格式。
+        link: https://labelstud.io/guide/export.html#Pascal-VOC-XML
+        tags:
+        - image segmentation
+        - object detection
+        name: VOC
+        disabled: true
+      - title: Brush labels to NumPy
+        description: 将画笔标注导出为 NumPy 二维数组。每个标注输出为一张图像。
+        link: https://labelstud.io/guide/export.html#Brush-labels-to-NumPy-amp-PNG
+        tags:
+        - image segmentation
+        name: BRUSH_TO_NUMPY
+        disabled: true
+      - title: Brush labels to PNG
+        description: 将画笔标注导出为 PNG 图像。每个标注输出为一张图像。
+        link: https://labelstud.io/guide/export.html#Brush-labels-to-NumPy-amp-PNG
+        tags:
+        - image segmentation
+        name: BRUSH_TO_PNG
+        disabled: true
+      - title: ASR Manifest
+        description: 将自动语音识别的音频转录标注导出为 NVIDIA NeMo 模型所需的 JSON 清单格式。
+        link: https://labelstud.io/guide/export.html#ASR-MANIFEST
+        tags:
+        - speech recognition
+        name: ASR_MANIFEST
+        disabled: true
+
+    status_code: 200
+
+
+---
+test_name: mig_export
+strict: false
+marks:
+- usefixtures:
+  - django_live_url
+stages:
+- id: signup
+  type: ref
+- name: stage
+  request:
+    headers:
+      content-type: application/json
+    json:
+      label_config:
+        <View>
+          <Image name="image" valueList="$images"/>
+            <RectangleLabels name="labels" toName="image">
+              <Label value="Cat"/>
+              <Label value="Dog"/>
+            </RectangleLabels>
+        </View>
+    method: POST
+    url: '{django_live_url}/api/projects'
+  response:
+    save:
+      json:
+        pk: id
+    status_code: 201
+- name: stage_export
+  request:
+    method: GET
+    url: '{django_live_url}/api/projects/{pk}/export/formats'
+  response:
+    strict:
+      - json:list_any_order
+    json:
+      - title: 'JSON'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#JSON'
+        name: 'JSON'
+      - title: 'JSON-MIN'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#JSON-MIN'
+        name: 'JSON_MIN'
+      - title: 'CSV'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#CSV'
+        name: 'CSV'
+      - title: 'TSV'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#TSV'
+        name: 'TSV'
+      - title: 'COCO'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#COCO'
+        tags: ['image segmentation', 'object detection']
+        name: 'COCO'
+        disabled: true
+      - title: 'YOLO'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#YOLO'
+        tags: ['image segmentation', 'object detection']
+        name: 'YOLO'
+        disabled: true
+      - title: 'YOLOv8 OBB'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#YOLO'
+        tags: ['image segmentation', 'object detection']
+        name: 'YOLO_OBB'
+        disabled: true
+      - title: 'CONLL2003'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#CONLL2003'
+        tags: ['sequence labeling', 'text tagging', 'named entity recognition']
+        name: 'CONLL2003'
+        disabled: true
+      - title: 'Pascal VOC XML'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#Pascal-VOC-XML'
+        tags: ['image segmentation', 'object detection']
+        name: 'VOC'
+        disabled: true
+      - title: 'Brush labels to NumPy'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#Brush-labels-to-NumPy-amp-PNG'
+        tags: ['image segmentation']
+        name: 'BRUSH_TO_NUMPY'
+        disabled: true
+      - title: 'Brush labels to PNG'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#Brush-labels-to-NumPy-amp-PNG'
+        tags: ['image segmentation']
+        name: 'BRUSH_TO_PNG'
+        disabled: true
+      - title: 'ASR Manifest'
+        description: !anystr
+        link: 'https://labelstud.io/guide/export.html#ASR-MANIFEST'
+        tags: ['speech recognition']
+        name: 'ASR_MANIFEST'
+        disabled: true
+    status_code: 200

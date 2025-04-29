@@ -1,0 +1,249 @@
+{
+  "projectCreation": [
+    {
+      "title": "你知道吗？",
+      "content": "使用Label Studio Enterprise将项目组织到工作区中时，更容易找到项目。",
+      "closable": true,
+      "link": {
+        "label": "更多",
+        "url": "https://docs.humansignal.com/guide/manage_projects#Create-workspaces-to-organize-projects",
+        "params": {
+          "experiment": "project_creation_tip",
+          "treatment": "find_and_manage_projects_live"
+        }
+      }
+    },
+    {
+      "title": "你知道吗？",
+      "content": "尝试Label Studio Starter Cloud，它针对小型团队和项目进行了优化。",
+      "link": {
+        "label": "更多",
+        "url": "https://humansignal.com/pricing/",
+        "params": {
+          "experiment": "project_creation_tip",
+          "treatment": "starter_cloud_live"
+        }
+      }
+    },
+    {
+      "title": "你知道吗？",
+      "content": "您可以使用Label Studio Enterprise控制内部团队成员和外部标注者对特定项目和工作区的访问。",
+      "closable": true,
+      "link": {
+        "label": "更多",
+        "url": "https://docs.humansignal.com/guide/manage_users#Roles-in-Label-Studio-Enterprise",
+        "params": {
+          "experiment": "project_creation_tip",
+          "treatment": "access_to_projects_live"
+        }
+      }
+    },
+    {
+      "title": "GenAI标签",
+      "content": "Label Studio提供了用于监督LLM微调、RAG检索排名、RLHF、聊天机器人评估等的模板。",
+      "closable": true,
+      "link": {
+        "label": "Explore templates",
+        "url": "https://labelstud.io/templates/gallery_generative_ai",
+        "params": {
+          "experiment": "project_creation_tip",
+          "treatment": "genai_templates_live"
+        }
+      }
+    }
+  ],
+  "organizationPage": [
+    {
+      "title": "看起来你的团队正在成长！",
+      "content": "使用Label Studio Enterprise为您的团队分配角色，并在项目和工作区级别控制对敏感数据的访问。",
+      "closable": true,
+      "link": {
+        "label": "更多",
+        "url": "https://docs.humansignal.com/guide/manage_users#Roles-in-Label-Studio-Enterprise",
+        "params": {
+          "experiment": "organization_page_tip",
+          "treatment": "team_growing_live"
+        }
+      }
+    },
+    {
+      "title": "想要简化和安全登录吗？",
+      "content": "使用带有Label Studio Enterprise的SAML、SCIM2或LDAP为您的团队启用单点登录。",
+      "closable": true,
+      "link": {
+        "label": "更多",
+        "url": "https://docs.humansignal.com/guide/auth_setup",
+        "params": {
+          "experiment": "organization_page_tip",
+          "treatment": "enable_sso_live"
+        }
+      }
+    },
+    {
+      "title": "你知道吗？",
+      "content": "Label Studio现在有一个针对小型团队和项目优化的Starter Cloud产品。",
+      "link": {
+        "label": "更多",
+        "url": "https://humansignal.com/pricing/",
+        "params": {
+          "experiment": "organization_page_tip",
+          "treatment": "starter_cloud_live"
+        }
+      }
+    },
+    {
+      "title": "与社区分享知识",
+      "content": "有问题或提示要与其他Label Studio用户分享吗？加入社区slack频道获取最新更新。 ",
+      "closable": true,
+      "link": {
+        "label": "加入社区",
+        "url": "https://label-studio.slack.com",
+        "params": {
+          "experiment": "organization_page_tip",
+          "treatment": "share_knowledge_live"
+        }
+      }
+    },
+    {
+      "title": "你知道吗？",
+      "content": "Label Studio支持与云存储、机器学习模型和流行工具的多点集成，以自动化您的机器学习管道。",
+      "closable": true,
+      "link": {
+        "label": "Check out the integrations directory",
+        "url": "https://labelstud.io/integrations/",
+        "params": {
+          "experiment": "organization_page_tip",
+          "treatment": "integration_points_live"
+        }
+      }
+    }
+  ],
+  "projectSettings": [
+    {
+      "title": "使用自动标签节省时间",
+      "content": "使用自动化立即标记大规模数据集，而不会牺牲企业平台的质量。",
+      "closable": true,
+      "link": {
+        "label": "更多",
+        "url": "https://docs.humansignal.com/guide/prompts_overview#Auto-labeling-with-Prompts",
+        "params": {
+          "experiment": "project_settings_tip",
+          "treatment": "auto_labeling_live"
+        }
+      }
+    },
+    {
+      "title": "你知道吗？",
+      "content": "尝试Label Studio Starter Cloud，它针对小型团队和项目进行了优化。",
+      "closable": true,
+      "link": {
+        "label": "更多",
+        "url": "https://humansignal.com/pricing/",
+        "params": {
+          "experiment": "project_settings_tip",
+          "treatment": "starter_cloud_live"
+        }
+      }
+    },
+    {
+      "title": "评估GenAI模型",
+      "content": "结合自动化和人工监督，在企业平台上评估和确保法学硕士的质量。",
+      "closable": true,
+      "link": {
+        "label": "更多",
+        "url": "https://humansignal.com/evals/",
+        "params": {
+          "experiment": "project_settings_tip",
+          "treatment": "evals_live"
+        }
+      }
+    },
+    {
+      "title": "你知道吗？",
+      "content": "您可以使用后端SDK连接ML模型，以节省预标记或主动学习的时间。",
+      "closable": true,
+      "link": {
+        "label": "更多",
+        "url": "https://labelstud.io/guide/ml",
+        "params": {
+          "experiment": "project_settings_tip",
+          "treatment": "connect_ml_models_live"
+        }
+      }
+    }
+  ],
+  "authPage": [
+    {
+      "title": "带提示的自动标签",
+      "description": "使用LLM立即为数千个任务添加准确的预测标签。",
+      "link": {
+        "label": "更多",
+        "url": "https://docs.humansignal.com/guide/prompts_overview",
+        "params": {
+          "experiment": "login_revamp",
+          "treatment": "prompts_auto_labeling_live"
+        }
+      }
+    },
+    {
+      "title": "评估和比较LLM",
+      "description": "使用Label Studio Prompts比较任务的准确性、成本和性能。",
+      "link": {
+        "label": "更多",
+        "url": "https://docs.humansignal.com/guide/prompts_overview",
+        "params": {
+          "experiment": "login_revamp",
+          "treatment": "model_eval_live"
+        }
+      }
+    },
+    {
+      "title": "新功能！",
+      "description": "现在，您可以为PDF等多页文档添加标签。",
+      "link": {
+        "label": "更多",
+        "url": "https://labelstud.io/templates/multi-page-document-annotation",
+        "params": {
+          "experiment": "login_revamp",
+          "treatment": "multi_image_live"
+        }
+      }
+    },
+    {
+      "title": "新的企业功能！",
+      "description": "通过批量标记一次标记多个任务来节省时间",
+      "link": {
+        "label": "更多",
+        "url": "https://docs.humansignal.com/guide/labeling.html#Bulk-labeling",
+        "params": {
+          "experiment": "login_revamp",
+          "treatment": "bulk_labeling_live"
+        }
+      }
+    },
+    {
+      "title": "你知道吗？",
+      "description": "尝试Label Studio Starter Cloud，它针对小型团队和项目进行了优化。",
+      "link": {
+        "label": "更多",
+        "url": "https://humansignal.com/pricing/",
+        "params": {
+          "experiment": "login_revamp",
+          "treatment": "starter_cloud_live"
+        }
+      }
+    },
+    {
+      "title": "你知道吗？",
+      "description": "有一个企业版的Label Studio，它包含了更多的功能和自动化，可以更快地标记数据，同时确保最高的质量。",
+      "link": {
+        "label": "更多",
+        "url": "https://humansignal.com/goenterprise/",
+        "params": {
+          "experiment": "login_revamp",
+          "treatment": "enterprise_platform_live"
+        }
+      }
+    }
+  ]
+}
