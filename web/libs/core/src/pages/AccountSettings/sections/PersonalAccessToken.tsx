@@ -57,7 +57,7 @@ export const PersonalAccessToken = () => {
           <div className="flex gap-2 w-full justify-between">
             <Input name="token" className={styles.input} readOnly value={token} />
             <Button icon={<IconFileCopy />} onClick={copyToken} disabled={tokenCopied}>
-              {tokenCopied ? "Copied!" : "Copy"}
+              {tokenCopied ? "已复制" : "复制"}
             </Button>
             <Button look="danger" onClick={reset.mutate}>
               重置
@@ -75,7 +75,7 @@ export const PersonalAccessToken = () => {
               value={curl}
             />
             <Button icon={<IconFileCopy />} onClick={copyCurl} disabled={curlCopied}>
-              {curlCopied ? "Copied!" : "Copy"}
+              {curlCopied ? "已复制" : "复制"}
             </Button>
           </div>
         </div>

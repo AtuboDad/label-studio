@@ -22,11 +22,6 @@ export const accountSettingsSections = (settings: AuthTokenSettings): SectionTyp
       component: PersonalInfo,
     },
     {
-      title: "电子邮件首选项",
-      id: "email-preferences",
-      component: EmailPreferences,
-    },
-    {
       title: "成员信息",
       id: "membership-info",
       component: MembershipInfo,

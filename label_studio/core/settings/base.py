@@ -164,7 +164,7 @@ DATABASES_ALL = {
         'USER': get_env('MYSQL_USER', 'application'),
         'PASSWORD': get_env('MYSQL_PASSWORD', '&Eyn{qzwg38_'),
         'NAME': get_env('MYSQL_NAME', 'label_platform'),
-        'HOST': get_env('MYSQL_HOST', '10.10.8.120'),
+        'HOST': get_env('MYSQL_HOST', '10.10.8.103'),
         'PORT': int(get_env('MYSQL_PORT', '3306')),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",

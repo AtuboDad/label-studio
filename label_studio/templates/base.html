@@ -32,10 +32,7 @@
 
   {% if settings.FRONTEND_SENTRY_DSN %}
     <!-- Sentry -->
-    <script
-    src="https://browser.sentry-cdn.com/5.17.0/bundle.min.js"
-    integrity="sha384-lowBFC6YTkvMIWPORr7+TERnCkZdo5ab00oH5NkFLeQUAmBTLGwJpFjF6djuxJ/5"
-    crossorigin="anonymous"></script>
+    <script src="{{ settings.HOSTNAME }}{% static 'js/bundle.min.js' %}"></script>
   {% endif %}
 
   <script nonce="{{request.csp_nonce}}">
@@ -43,7 +40,7 @@
   </script>
 
   {% block page_labeling %}
-    <title>Label Studio</title>
+    <title>点睛数据标注管理平台</title>
     <link href="{{settings.HOSTNAME}}{% static 'images/favicon.ico' %}" rel="shortcut icon"/>
   {% endblock %}
 

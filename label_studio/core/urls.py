@@ -29,7 +29,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 versions = collect_versions()
 open_api_info = openapi.Info(
-    title='Label Studio API',
+    title='点睛数据标注管理平台 API',
     default_version='v' + versions['release'],
     contact=openapi.Contact(url='https://labelstud.io'),
     x_logo={'url': '../../static/icons/logo-black.svg'},

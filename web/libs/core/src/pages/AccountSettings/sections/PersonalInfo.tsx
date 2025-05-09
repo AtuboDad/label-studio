@@ -123,17 +123,17 @@ export const PersonalInfo = () => {
         </div>
         <form onSubmit={userFormSubmitHandler} className={styles.sectionContent}>
           <div className={styles.flexRow}>
-            <div className={styles.flex1}>
+            {/* <div className={styles.flex1}>
               <Input
                 label="姓"
                 value={fname}
                 onChange={(e: React.KeyboardEvent<HTMLInputElement>) => setFname(e.currentTarget.value)}
                 name="first_name"
               />
-            </div>
+            </div> */}
             <div className={styles.flex1}>
               <Input
-                label="名"
+                label="姓名"
                 value={lname}
                 onChange={(e: React.KeyboardEvent<HTMLInputElement>) => setLname(e.currentTarget.value)}
                 name="last_name"
